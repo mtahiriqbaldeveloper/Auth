@@ -3,6 +3,7 @@ package com.dev.demo.config;
 
 import com.dev.demo.security.JwtAuthenticationEntryPoint;
 import com.dev.demo.security.JwtAuthenticationFilter;
+import com.dev.demo.service.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -10,6 +11,8 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -19,6 +22,7 @@ public class SecurityConfig {
 
 
     private JwtAuthenticationEntryPoint unAuthHandler;
+    private UserService userService;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
@@ -28,7 +32,7 @@ public class SecurityConfig {
                         .authorizeHttpRequests().antMatchers("/",
                         "/favicon.ico","/**/*.png","/**/*.gif","/**/*.svg","/**/*.jpg",
                         "/**/*.html","/**/*.css", "/**/*.js").permitAll()
-                        .antMatchers("/user/**").permitAll()
+                        .antMatchers("/user/login").permitAll()
                         .antMatchers("/auth/**").authenticated().and().formLogin();
         httpSecurity.headers().frameOptions().sameOrigin();
         httpSecurity.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
@@ -41,6 +45,12 @@ public class SecurityConfig {
         return authConfig.getAuthenticationManager();
     }
 
+
+
+    @Bean
+    public PasswordEncoder passwordEncoder(){
+        return new BCryptPasswordEncoder();
+    }
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter(){
         return new JwtAuthenticationFilter();

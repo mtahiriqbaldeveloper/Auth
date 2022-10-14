@@ -22,7 +22,13 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return null;
+        System.out.println(username);
+        User user=userRepo.findByEmail(username).orElseThrow(()->
+            new UsernameNotFoundException("user not found"));
+        com.dev.demo.security.User userDetails =
+                new com.dev.demo.security.User
+                        (user.getId(),user.getUserName(),user.getPassword(),user.getPassword());
+        return userDetails;
     }
 
     public UserDetails loadUserById(Long id){

@@ -2,6 +2,7 @@ package com.dev.demo.controller;
 
 
 import com.dev.demo.Model.User;
+import com.dev.demo.payload.JwtAuthenticationResponse;
 import com.dev.demo.payload.LoginRequest;
 import com.dev.demo.payload.SignUpRequest;
 import com.dev.demo.security.JwtTokenProvider;
@@ -41,15 +42,17 @@ public class UserController {
 
         System.out.println(loginRequest);
 
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+        Authentication authentication = authenticationManager.authenticate
+                (new UsernamePasswordAuthenticationToken(
                 loginRequest.getEmail(),
                 loginRequest.getPassword()
         ));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String token = jwtTokenProvider.generateToken(authentication);
-        System.out.println(token);
-        return ResponseEntity.ok("successful");
+
+        System.out.println(SecurityContextHolder.getContext().getAuthentication());
+        return ResponseEntity.ok(new JwtAuthenticationResponse(token));
     }
 
 
@@ -58,7 +61,7 @@ public class UserController {
 
         System.out.println(signUpRequest.toString());
 
-        userService.createUser(new User(signUpRequest.getUserName(), signUpRequest.getPassword(),signUpRequest.getPassword()));
+        userService.createUser(new User(signUpRequest.getUserName(), signUpRequest.getPassword(),signUpRequest.getEmail()));
 
         return ResponseEntity.ok("accepted");
     }
