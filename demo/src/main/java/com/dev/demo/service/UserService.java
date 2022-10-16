@@ -5,15 +5,18 @@ import com.dev.demo.repo.UserRepo;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserService implements UserDetailsService {
 
-    public final UserRepo userRepo;
+    private final UserRepo userRepo;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepo userRepo) {
+    public UserService(UserRepo userRepo, PasswordEncoder passwordEncoder) {
         this.userRepo = userRepo;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public void createUser(User user){
@@ -27,7 +30,7 @@ public class UserService implements UserDetailsService {
             new UsernameNotFoundException("user not found"));
         com.dev.demo.security.User userDetails =
                 new com.dev.demo.security.User
-                        (user.getId(),user.getUserName(),user.getPassword(),user.getPassword());
+                        (user.getId(),user.getUserName(), passwordEncoder.encode(user.getPassword()) ,user.getPassword());
         return userDetails;
     }
 
